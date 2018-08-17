@@ -52,4 +52,70 @@ describe('GET /users/:id' , () =>{
         })
     })    
   })
+  describe('실패', () => {
+    it('id가 숫자가 아닐경우 400', done => {
+      request(app)
+        .get('/users/one')
+        .expect(400).end(done)
+    })
+    it("id로 유저를 찾을수 없을경우 404", done => {
+      request(app)
+        .get('/users/5')
+        .expect(404).end(done)
+    });
+  })
+})
+
+
+describe('DELETE /users/:id', () => {
+  describe('성공', () => {
+    it('204를 응답한다.', done => {
+       request(app)
+        .delete('/users/2')
+        .expect(204).end(done);
+    })
+  })
+  describe('실패', () => {
+    it('id가 숫자가 아닐경우 400', done => {
+      request(app)
+        .delete('/users/two')
+        .expect(400).end(done)
+    })
+  })
+})
+
+
+describe('POST /users', () => {
+  describe('성공', () => {
+    it('201 상태코드반환', done => {
+      request(app)
+        .post('/users')
+        .send({name : 'nananan'})
+        .expect(201).end(done)
+    })
+    it("객체반환", done => {
+      request(app)
+        .post("/users")
+        .send({ name : "nananan" })
+        .end((err, res) => {
+          res.body.should.be.instanceof(Object);
+          //res.body.should.have.property("name",'nananan');
+          done();
+        });
+    });
+  })
+  describe("실패", () => {
+    it('name 파라미터 누락시 400반환', done => {
+      request(app)
+        .post('/users')
+        .send({})
+        .expect(400).end(done)
+    })
+    it('name 중복시 409반환', done => {
+      request(app)
+        .post('/users')
+        .send({ name: 'Allis'})
+        .expect(409).end(done)
+    })
+  });
 })
