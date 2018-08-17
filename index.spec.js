@@ -86,20 +86,15 @@ describe('DELETE /users/:id', () => {
 
 
 describe('POST /users', () => {
-  describe('성공', () => {
-    it('201 상태코드반환', done => {
-      request(app)
-        .post('/users')
-        .send({name : 'nananan'})
-        .expect(201).end(done)
-    })
+  describe('성공', () => {    
     it("객체반환", done => {
       request(app)
         .post("/users")
         .send({ name : "nananan" })
+        .expect(201)
         .end((err, res) => {
-          res.body.should.be.instanceof(Object);
-          //res.body.should.have.property("name",'nananan');
+          //res.body.should.be.instanceof(Object);
+          res.body.should.have.property('name','nananan');
           done();
         });
     });
@@ -118,4 +113,46 @@ describe('POST /users', () => {
         .expect(409).end(done)
     })
   });
+})
+
+describe('PUT /users/:id', () =>{
+  describe('성공', () => {
+    it('변경된 name을 응답한다.', done => {
+      request(app)
+        .put("/users/1")
+        .send({ name: "modify" })
+        .expect(200)
+        .end((err, res) => {          
+          res.body.should.have.property('name', "modify");
+          done();
+        });
+    })
+  })
+  describe('실패', () => {
+    it("id가 정수가아닐경우 400반환", done => {
+      request(app)
+        .put("/users/one")        
+        .expect(400)
+        .end(done);
+    });
+    it('name 파라미터 누락시 400반환', done => {
+      request(app)
+        .put('/users/1')
+        .send({})
+        .expect(400).end(done)
+    })
+    it("없는유저일경우 404반환", done => {
+      request(app)
+        .put("/users/5")
+        .send({name : 'aa'})
+        .expect(404)
+        .end(done);
+    });
+    it('name 중복시 409반환', done => {
+      request(app)
+        .put('/users/1')
+        .send({ name: 'Tom' })
+        .expect(409).end(done)
+    })
+  })
 })

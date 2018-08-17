@@ -66,10 +66,11 @@ app.post('/users', (req, res) => {
     return;
   }
 
-  const filtered = users.filter( user => {
+  const found = users.filter( user => {
     return user.name === name;
-  })
-  if(filtered.length > 0) {
+  }).length
+  
+  if(found) {
     res.status(409).end();
     return;
   }
@@ -84,5 +85,39 @@ app.post('/users', (req, res) => {
 
 })
 
+
+app.put('/users/:id', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+
+  if (Number.isNaN(id)) {
+    res.status(400).end();
+    return;
+  }
+
+  const name = req.body.name;
+  if (!name) {
+    res.status(400).end();
+    return;
+  }
+
+  const notUser = users.find(user => {
+    return user.id === id;
+  });
+  if (notUser) {
+    res.status(404).end();
+    return;
+  }
+
+  const filtered = users.filter(user => {
+    return user.name === name;
+  })
+  if (filtered.length > 0) {
+    res.status(409).end();
+    return;
+  }
+
+
+
+})
 // 테스트하기 위해서 
 module.exports = app;
